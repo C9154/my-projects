@@ -18,7 +18,7 @@ Resources:
       GroupDescription: Enable HTTP for Apache Web Server and SSH for secure connection.
       SecurityGroupIngress:
         - IpProtocol: tcp
-          Fromport: 80
+          FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
@@ -40,21 +40,21 @@ Resources:
       UserData:
         Fn::Base64:
           !Sub |
-            #! /bin/bash
+            #!/bin/bash
             yum update -y
             yum install httpd -y
-            FOLDER="https://raw.githubusercontent.com/C9154/my-projects/main/aws/Project-101-kittens-carousel-static-website-ec2/static-web"
+            FOLDER="https://raw.githubusercontent.com/C9154/my-projects/main/aws/Project-101-kittens-carousel-static-website-ec2/static-web/"
             cd /var/www/html
             wget $FOLDER/index.html
             wget $FOLDER/cat0.jpg
             wget $FOLDER/cat1.jpg
             wget $FOLDER/cat2.jpg
             wget $FOLDER/cat3.png
-            systemct1 start httpd
-            systemct1 enable httpd
+            systemctl start httpd
+            systemctl enable httpd
 
 Outputs:
-  WebsiteUrl:
+  WebsiteURL:
     Value: !Sub
       - http://${PublicAddress}
       - PublicAddress: !GetAtt WebServerHost.PublicDnsName
