@@ -8,7 +8,7 @@ Parameters:
   KeyName:
     Description: Enter the name of your Key Pair for SSH connections
     Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: 
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair. 
 
 Resources:
   WebServerSecurityGroup:
@@ -24,7 +24,7 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-
+  
   WebServerHost:
     Type: AWS::EC2::Instance
     Properties:
@@ -35,14 +35,24 @@ Resources:
         - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: Web Server of ${AWS::StackName} Stack
+          Value: !Sub Web Server of ${AWS::StackName} Stack
       UserData: !Base64 |
-      #!/bin/bash
-      yum update -y
-      yum install python3 -y
-      pip3 install flask
-      cd /home/ec2-user
-      wget
+        #!/bin/bash
+        yum update -y
+        yum install python3 -y
+        pip3 install flask
+        cd /home/ec2-user
+        wget https://raw.githubusercontent.com/C9154/my-projects/main/aws/Project-001-Roman-Numerals-Converter/app.py
+        mkdir templates
+        cd templates
+        wget https://raw.githubusercontent.com/C9154/my-projects/main/aws/Project-001-Roman-Numerals-Converter/index.html
+        wget https://raw.githubusercontent.com/C9154/my-projects/main/aws/Project-001-Roman-Numerals-Converter/result.html
+        cd ..
+        python3 app.py
 
-       
 Outputs:
+  WebsiteURL:
+    Value: !Sub
+      - http://${PublicAddress}
+      - PublicAddress: !GetAtt WebServerHost.PublicDnsName
+    Description: Roman Numerals Converter Application URL
